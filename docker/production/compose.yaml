@@ -1,0 +1,10 @@
+services:
+  next-starter-kit-frontend-portal-production:
+    build:
+      context: ../../
+      dockerfile: docker/Dockerfile
+    image: next-starter-kit-frontend-portal-production:latest
+    ports:
+      - "3000:3000"
+    env_file:
+      - ../../.env

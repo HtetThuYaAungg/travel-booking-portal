@@ -1,0 +1,5 @@
+NEXT_PUBLIC_USER_ACCESS_TOKEN=access_token_development
+NEXT_PUBLIC_USER_REFRESH_TOKEN=access_token_development
+NEXT_PUBLIC_BASE_URL=http://localhost:3002
+
+NEXT_CONFIG_OUTPUT="standalone"
