@@ -161,7 +161,7 @@ export const NumberInput = ({
             </label>
           )}
 
-          <div className={cn(inputSpanClass, "relative  bg-background")}>
+          <div className={cn(inputSpanClass, "relative ")}>
             <FormControl>
               <div
                 className={`inline-flex items-center bg-background rounded-xl transition-all duration-200 ${

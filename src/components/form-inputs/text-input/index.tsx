@@ -114,7 +114,7 @@ export const TextInput = ({
             </label>
           )}
 
-          <div className={cn(inputSpanClass, "relative  bg-background")}>
+          <div className={cn(inputSpanClass, "relative")}>
             {children ? (
               children
             ) : (
@@ -134,7 +134,14 @@ export const TextInput = ({
                       icon ? `pl-10 ${rightBtn ? "pr-10" : ""}` : ""
                     } `}
                     value={field.value || ""}
-                    onChange={field.onChange}
+                    onChange={(e) => {
+                      if (type === "number") {
+                        const value = e.target.value === "" ? "" : Number(e.target.value);
+                        field.onChange(value);
+                      } else {
+                        field.onChange(e);
+                      }
+                    }}
                     onBlur={field.onBlur}
                     name={field.name}
                     ref={field.ref}

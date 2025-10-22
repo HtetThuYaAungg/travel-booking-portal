@@ -23,7 +23,7 @@ const gridColsMap: Record<number, string> = {
   10: "grid-cols-10",
   11: "grid-cols-11",
   12: "grid-cols-12",
-}
+};
 
 const colSpanMap: Record<number, string> = {
   1: "col-span-1",
@@ -38,7 +38,7 @@ const colSpanMap: Record<number, string> = {
   10: "col-span-10",
   11: "col-span-11",
   12: "col-span-12",
-}
+};
 interface FormCheckboxProps {
   form: UseFormReturn<any>;
   name: string;
@@ -95,7 +95,7 @@ export const CheckBox = ({
               >
                 {label}
               </FormLabel>
-              <div className={cn(inputSpanClass, "relative  bg-background")}>
+              <div className={cn(inputSpanClass, "relative")}>
                 <FormControl>
                   <div className="relative">
                     <Checkbox
@@ -118,8 +118,8 @@ export const CheckBox = ({
             </>
           ) : (
             <>
-                {/* <div className={`relative col-span-${labelSpan}`} /> */}
-                <div className={cn(inputSpanClass, "relative")}>
+              {/* <div className={`relative col-span-${labelSpan}`} /> */}
+              <div className={cn(inputSpanClass, "relative")}>
                 <div className="flex items-start space-x-2">
                   <FormControl>
                     <div className="relative">

@@ -31,3 +31,10 @@ export const permissionKey = {
   filters: (filters: Record<string, string | number>) =>
     [...permissionKey.all, "list", ...Object.values(filters)] as const,
 };
+
+export const hotelKey = {
+  all: ["hotel"] as const,
+  detail: (id: string | null) => [...hotelKey.all, id, "detail"] as const,
+  filters: (filters: Record<string, string | number>) =>
+    [...hotelKey.all, "list", ...Object.values(filters)] as const,
+};

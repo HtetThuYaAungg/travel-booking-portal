@@ -5,6 +5,7 @@ import {
   UserRoundCog,
   Gem,
   Logs,
+  Building,
 } from "lucide-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
 
@@ -54,6 +55,11 @@ export const static_routes: static_route_type[] = [
 ];
 
 export const permission_routes = [
+  {
+    title: "Hotels",
+    url: "/hotels",
+    icon: Building,
+  },
   {
     title: "Setting",
     url: "#",
@@ -120,6 +126,16 @@ export const initialPermissions: Permissions = [
         },
       },
     ],
+  },
+  {
+    menuName: "Hotels",
+    actions: {
+      create: false,
+      delete: false,
+      edit: false,
+      list: false,
+      read: false,
+    },
   },
 ];
 
