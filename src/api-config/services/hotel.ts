@@ -1,4 +1,4 @@
-import { HotelFormValues } from "@/app/(root)/hotels/schema/create-hotel";
+import { HotelFormValues } from "@/app/(root)/travel/hotels/schema/create-hotel";
 import apiInstance from "../instance";
 import { ApiResponse } from "./type";
 import qs from "query-string";

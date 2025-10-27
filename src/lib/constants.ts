@@ -56,9 +56,19 @@ export const static_routes: static_route_type[] = [
 
 export const permission_routes = [
   {
-    title: "Hotels",
-    url: "/hotels",
+    title: "Travel",
+    url: "#",
     icon: Building,
+    items: [
+      {
+        title: "Hotels",
+        url: "/travel/hotels",
+      },
+      {
+        title: "Hotel Bookings",
+        url: "/travel/hotel-bookings",
+      }
+    ]
   },
   {
     title: "Setting",
@@ -129,6 +139,16 @@ export const initialPermissions: Permissions = [
   },
   {
     menuName: "Hotels",
+    actions: {
+      create: false,
+      delete: false,
+      edit: false,
+      list: false,
+      read: false,
+    },
+  },
+  {
+    menuName: "Hotel Bookings",
     actions: {
       create: false,
       delete: false,

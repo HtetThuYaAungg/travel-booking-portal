@@ -10,6 +10,8 @@ export function HotelDetailRender({
   data,
   customRenderers,
 }: HotelDetailRenderProps) {
+
+  console.log("data", data);
   return (
     <UniversalDetailsRenderer
       data={{

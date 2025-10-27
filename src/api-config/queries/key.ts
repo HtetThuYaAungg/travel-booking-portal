@@ -38,3 +38,10 @@ export const hotelKey = {
   filters: (filters: Record<string, string | number>) =>
     [...hotelKey.all, "list", ...Object.values(filters)] as const,
 };
+
+export const hotelBookingKey = {
+  all: ["hotel-booking"] as const,
+  detail: (id: string | null) => [...hotelBookingKey.all, id, "detail"] as const,
+  filters: (filters: Record<string, string | number>) =>
+    [...hotelBookingKey.all, "list", ...Object.values(filters)] as const,
+};

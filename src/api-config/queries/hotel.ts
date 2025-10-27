@@ -7,7 +7,7 @@ import {
   getHotelById,
   updateHotel,
 } from "../services/hotel";
-import { HotelFormValues } from "@/app/(root)/hotels/schema/create-hotel";
+import { HotelFormValues } from "@/app/(root)/travel/hotels/schema/create-hotel";
 
 export function useGetAllHotelsByFilter(
   filters: Record<string, string | number>
