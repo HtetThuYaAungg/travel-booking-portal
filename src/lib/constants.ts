@@ -6,6 +6,7 @@ import {
   Gem,
   Logs,
   Building,
+  Plane,
 } from "lucide-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
 
@@ -14,7 +15,10 @@ export type Action = {
   delete: boolean;
   edit: boolean;
   list: boolean;
+  reject?: boolean;
   read: boolean;
+  approve?: boolean;
+  [key: string]: boolean | undefined;
 };
 
 export type SubMenu = {
@@ -67,6 +71,10 @@ export const permission_routes = [
       {
         title: "Hotel Bookings",
         url: "/travel/hotel-bookings",
+      },
+      {
+        title: "Flights",
+        url: "/travel/flights",
       }
     ]
   },
@@ -138,28 +146,45 @@ export const initialPermissions: Permissions = [
     ],
   },
   {
-    menuName: "Hotels",
-    actions: {
-      create: false,
-      delete: false,
-      edit: false,
-      list: false,
-      read: false,
-    },
-  },
-  {
-    menuName: "Hotel Bookings",
-    actions: {
-      create: false,
-      delete: false,
-      edit: false,
-      list: false,
-      read: false,
-    },
-  },
+    menuName: "Travel",
+    subMenus: [
+      {
+        menuName: "Hotels",
+        actions: {
+          create: false,
+          delete: false,
+          edit: false,
+          list: false,
+          read: false,
+        },
+      },
+      {
+        menuName: "Hotel Bookings",
+        actions: {
+          create: false,
+          delete: false,
+          edit: false,
+          list: false,
+          read: false,
+          approve: false,
+          reject: false,
+        },
+      },
+      {
+        menuName: "Flights",
+        actions: {
+          create: false,
+          delete: false,
+          edit: false,
+          list: false,
+          read: false,
+        },
+      },
+    ],
+ }
 ];
 
-export const permission_actions = ["create", "edit", "delete", "list", "read"];
+export const permission_actions = ["create", "edit", "delete", "list", "read", "approve", "reject"];
 
 export const action = [
   {

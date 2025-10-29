@@ -3,15 +3,15 @@
 import { useState, useEffect } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { ChevronRight, ChevronDown, Archive, UserRoundCog } from "lucide-react";
-import { useController, type Control } from "react-hook-form";
 import {
-  permission_actions,
-  type Action,
-  type Menu,
-  type Permissions,
-  type SubMenu,
-} from "@/lib/constants";
+  ChevronRight,
+  ChevronDown,
+  Archive,
+  UserRoundCog,
+  Map,
+} from "lucide-react";
+import { useController, type Control } from "react-hook-form";
+import type { Action, Menu, Permissions, SubMenu } from "@/lib/constants";
 
 // Define the state for checked items
 type CheckedState = {
@@ -82,24 +82,20 @@ export default function PermissionTree({
 
       if (menu.subMenus) {
         menu.subMenus.forEach((subMenu: any) => {
-          initialCheckedState[menu.menuName][subMenu.menuName] = {
-            create: subMenu.actions.create,
-            delete: subMenu.actions.delete,
-            edit: subMenu.actions.edit,
-            list: subMenu.actions.list,
-            read: subMenu.actions.read,
-            // Include other actions if needed
-          };
+          // Dynamically create action object based on what's available in the data
+          const actionState: any = {};
+          Object.keys(subMenu.actions).forEach((actionKey) => {
+            actionState[actionKey] = subMenu.actions[actionKey];
+          });
+          initialCheckedState[menu.menuName][subMenu.menuName] = actionState;
         });
       } else if (menu.actions) {
-        initialCheckedState[menu.menuName]["_self"] = {
-          create: menu.actions.create,
-          delete: menu.actions.delete,
-          edit: menu.actions.edit,
-          list: menu.actions.list,
-          read: menu.actions.read,
-          // Include other actions if needed
-        };
+        // Dynamically create action object based on what's available in the data
+        const actionState: any = {};
+        Object.keys(menu.actions).forEach((actionKey) => {
+          actionState[actionKey] = menu.actions[actionKey];
+        });
+        initialCheckedState[menu.menuName]["_self"] = actionState;
       }
     });
 
@@ -126,13 +122,10 @@ export default function PermissionTree({
 
         for (const subMenuName of subMenus) {
           const actions = subMenusOrActions[subMenuName];
-          const subMenuChecked =
-            actions.create ||
-            actions.delete ||
-            actions.edit ||
-            actions.list ||
-            actions.read;
-          // Include other actions if needed
+          // Dynamically check all available actions
+          const subMenuChecked = Object.values(actions).some(
+            (value) => value === true
+          );
 
           if (subMenuChecked) {
             anyChecked = true;
@@ -158,29 +151,15 @@ export default function PermissionTree({
 
       // Check if this menu has submenus or direct actions
       if ("_self" in subMenusOrActions) {
-        // This menu has direct actions
-        menuItem.actions = {
-          create: subMenusOrActions._self.create,
-          delete: subMenusOrActions._self.delete,
-          edit: subMenusOrActions._self.edit,
-          list: subMenusOrActions._self.list,
-          read: subMenusOrActions._self.read,
-          // Include other actions if needed
-        };
+        // This menu has direct actions - dynamically create actions object
+        menuItem.actions = { ...subMenusOrActions._self } as Action;
       } else {
         // This menu has submenus
         menuItem.subMenus = [];
         Object.entries(subMenusOrActions).forEach(([subMenuName, actions]) => {
           menuItem.subMenus!.push({
             menuName: subMenuName,
-            actions: {
-              create: actions.create,
-              delete: actions.delete,
-              edit: actions.edit,
-              list: actions.list,
-              read: actions.read,
-              // Include other actions if needed
-            },
+            actions: { ...actions } as Action,
           });
         });
       }
@@ -209,7 +188,7 @@ export default function PermissionTree({
   const handleActionChange = (
     menuName: string,
     subMenuName: string | null,
-    action: keyof Action,
+    action: string,
     checked: boolean
   ) => {
     setCheckedState((prevState) => {
@@ -222,14 +201,26 @@ export default function PermissionTree({
       const targetSubMenu = subMenuName || "_self";
 
       if (!newState[menuName][targetSubMenu]) {
-        newState[menuName][targetSubMenu] = {
-          create: false,
-          delete: false,
-          edit: false,
-          list: false,
-          read: false,
-          // Include other actions if needed
-        };
+        // Initialize with default actions from the defaultPermissions
+        const defaultMenu = defaultPermissions.find(
+          (m) => m.menuName === menuName
+        );
+        if (defaultMenu) {
+          if (subMenuName && defaultMenu.subMenus) {
+            const defaultSubMenu = defaultMenu.subMenus.find(
+              (sm) => sm.menuName === subMenuName
+            );
+            if (defaultSubMenu) {
+              newState[menuName][targetSubMenu] = {
+                ...defaultSubMenu.actions,
+              } as any;
+            }
+          } else if (defaultMenu.actions) {
+            newState[menuName][targetSubMenu] = {
+              ...defaultMenu.actions,
+            } as any;
+          }
+        }
       }
 
       newState[menuName][targetSubMenu][action] = checked;
@@ -257,14 +248,23 @@ export default function PermissionTree({
         newState[menuName] = {};
       }
 
-      newState[menuName][subMenuName] = {
-        create: checked,
-        delete: checked,
-        edit: checked,
-        list: checked,
-        read: checked,
-        // Include other actions if needed
-      };
+      // Get the default actions for this submenu
+      const defaultMenu = defaultPermissions.find(
+        (m) => m.menuName === menuName
+      );
+      if (defaultMenu && defaultMenu.subMenus) {
+        const defaultSubMenu = defaultMenu.subMenus.find(
+          (sm) => sm.menuName === subMenuName
+        );
+        if (defaultSubMenu) {
+          // Create new actions object with all actions set to checked value
+          const newActions: any = {};
+          Object.keys(defaultSubMenu.actions).forEach((actionKey) => {
+            newActions[actionKey] = checked;
+          });
+          newState[menuName][subMenuName] = newActions;
+        }
+      }
 
       // Update indeterminate state
       updateIndeterminateState(newState);
@@ -291,25 +291,20 @@ export default function PermissionTree({
       if (menu?.subMenus) {
         // This menu has submenus
         menu.subMenus.forEach((subMenu) => {
-          newState[menuName][subMenu.menuName] = {
-            create: checked,
-            delete: checked,
-            edit: checked,
-            list: checked,
-            read: checked,
-            // Include other actions if needed
-          };
+          // Create new actions object with all actions set to checked value
+          const newActions: any = {};
+          Object.keys(subMenu.actions).forEach((actionKey) => {
+            newActions[actionKey] = checked;
+          });
+          newState[menuName][subMenu.menuName] = newActions;
         });
-      } else {
+      } else if (menu?.actions) {
         // This menu has direct actions
-        newState[menuName]["_self"] = {
-          create: checked,
-          delete: checked,
-          edit: checked,
-          list: checked,
-          read: checked,
-          // Include other actions if needed
-        };
+        const newActions: any = {};
+        Object.keys(menu.actions).forEach((actionKey) => {
+          newActions[actionKey] = checked;
+        });
+        newState[menuName]["_self"] = newActions;
       }
 
       // Update indeterminate state
@@ -338,14 +333,8 @@ export default function PermissionTree({
     const subMenu = checkedState[menuName]?.[subMenuName];
     if (!subMenu) return false;
 
-    return (
-      subMenu.create &&
-      subMenu.delete &&
-      subMenu.edit &&
-      subMenu.list &&
-      subMenu.read
-      // Include other actions if needed
-    );
+    // Check if all available actions are checked
+    return Object.values(subMenu).every((value) => value === true);
   };
 
   // Check if any actions in a submenu are checked
@@ -356,14 +345,8 @@ export default function PermissionTree({
     const subMenu = checkedState[menuName]?.[subMenuName];
     if (!subMenu) return false;
 
-    return (
-      subMenu.create ||
-      subMenu.delete ||
-      subMenu.edit ||
-      subMenu.list ||
-      subMenu.read
-      // Include other actions if needed
-    );
+    // Check if any available actions are checked
+    return Object.values(subMenu).some((value) => value === true);
   };
 
   // Check if all submenus in a menu are checked
@@ -373,14 +356,7 @@ export default function PermissionTree({
 
     // If this menu has direct actions
     if (menu._self) {
-      return (
-        menu._self.create &&
-        menu._self.delete &&
-        menu._self.edit &&
-        menu._self.list &&
-        menu._self.read
-        // Include other actions if needed
-      );
+      return Object.values(menu._self).every((value) => value === true);
     }
 
     // If this menu has submenus
@@ -396,14 +372,7 @@ export default function PermissionTree({
 
     // If this menu has direct actions
     if (menu._self) {
-      return (
-        menu._self.create ||
-        menu._self.delete ||
-        menu._self.edit ||
-        menu._self.list ||
-        menu._self.read
-        // Include other actions if needed
-      );
+      return Object.values(menu._self).some((value) => value === true);
     }
 
     // If this menu has submenus
@@ -415,6 +384,8 @@ export default function PermissionTree({
   // Get icon for menu
   const getMenuIcon = (menuName: string) => {
     switch (menuName.toLowerCase()) {
+      case "Travel":
+        return <Map className="h-4 w-4" />;
       case "setting":
         return <UserRoundCog className="h-4 w-4" />;
       default:
@@ -532,35 +503,35 @@ export default function PermissionTree({
           </div>
         </div>
 
-        <div className="ml-14 grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1 mt-1">
-          {permission_actions.map((action) => (
-            <div key={action as keyof Action} className="flex items-center">
-              <Checkbox
-                id={`action-${menuName}-${subMenu.menuName}-${action}`}
-                disabled={disabled}
-                checked={
-                  checkedState[menuName]?.[subMenu.menuName]?.[
-                    action as keyof Action
-                  ] || false
-                }
-                onCheckedChange={(checked) =>
-                  handleActionChange(
-                    menuName,
-                    subMenu.menuName,
-                    action as keyof Action,
-                    checked === true
-                  )
-                }
-                className="h-3.5 w-3.5 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
-              />
-              <label
-                htmlFor={`action-${menuName}-${subMenu.menuName}-${action}`}
-                className="ml-2 text-xs font-medium cursor-pointer capitalize"
-              >
-                {action}
-              </label>
-            </div>
-          ))}
+        <div className="ml-14 grid grid-cols-2 gap-x-4 gap-y-1 mt-1">
+          {subMenu.actions &&
+            Object.keys(subMenu.actions).map((action) => (
+              <div key={action} className="flex items-center">
+                <Checkbox
+                  id={`action-${menuName}-${subMenu.menuName}-${action}`}
+                  disabled={disabled}
+                  checked={
+                    checkedState[menuName]?.[subMenu.menuName]?.[action] ||
+                    false
+                  }
+                  onCheckedChange={(checked) =>
+                    handleActionChange(
+                      menuName,
+                      subMenu.menuName,
+                      action,
+                      checked === true
+                    )
+                  }
+                  className="h-3.5 w-3.5 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+                />
+                <label
+                  htmlFor={`action-${menuName}-${subMenu.menuName}-${action}`}
+                  className="ml-2 text-xs font-medium cursor-pointer capitalize"
+                >
+                  {action}
+                </label>
+              </div>
+            ))}
         </div>
       </div>
     );
@@ -606,35 +577,34 @@ export default function PermissionTree({
           </div>
         </div>
 
-        <div className="ml-14 grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1 mt-1">
-          {permission_actions.map((action) => (
-            <div key={action as keyof Action} className="flex items-center">
-              <Checkbox
-                id={`action-${menu.menuName}-${action}`}
-                disabled={disabled}
-                checked={
-                  checkedState[menu.menuName]?.["_self"]?.[
-                    action as keyof Action
-                  ] || false
-                }
-                onCheckedChange={(checked) =>
-                  handleActionChange(
-                    menu.menuName,
-                    null,
-                    action as keyof Action,
-                    checked === true
-                  )
-                }
-                className="h-3.5 w-3.5 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
-              />
-              <label
-                htmlFor={`action-${menu.menuName}-${action}`}
-                className="ml-2 text-xs font-medium cursor-pointer capitalize"
-              >
-                {action}
-              </label>
-            </div>
-          ))}
+        <div className="ml-14 grid grid-cols-2 gap-x-4 gap-y-1 mt-1">
+          {menu.actions &&
+            Object.keys(menu.actions).map((action) => (
+              <div key={action} className="flex items-center">
+                <Checkbox
+                  id={`action-${menu.menuName}-${action}`}
+                  disabled={disabled}
+                  checked={
+                    checkedState[menu.menuName]?.["_self"]?.[action] || false
+                  }
+                  onCheckedChange={(checked) =>
+                    handleActionChange(
+                      menu.menuName,
+                      null,
+                      action,
+                      checked === true
+                    )
+                  }
+                  className="h-3.5 w-3.5 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+                />
+                <label
+                  htmlFor={`action-${menu.menuName}-${action}`}
+                  className="ml-2 text-xs font-medium cursor-pointer capitalize"
+                >
+                  {action}
+                </label>
+              </div>
+            ))}
         </div>
       </div>
     );

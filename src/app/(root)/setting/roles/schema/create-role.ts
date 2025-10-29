@@ -16,7 +16,9 @@ export const roleCreateSchema = z.object({
               delete: z.boolean(),
               edit: z.boolean(),
               list: z.boolean(),
+              reject: z.boolean().optional(),
               read: z.boolean(),
+              approve: z.boolean().optional(),
             }),
           })
         )
@@ -27,7 +29,9 @@ export const roleCreateSchema = z.object({
           delete: z.boolean(),
           edit: z.boolean(),
           list: z.boolean(),
+          reject: z.boolean().optional(),
           read: z.boolean(),
+          approve: z.boolean().optional(),
         })
         .optional(),
     })

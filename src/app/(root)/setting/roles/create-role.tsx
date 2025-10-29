@@ -61,7 +61,7 @@ export default function CreateRole({
     isLoading: isLoadingEditedData,
     isFetching: isFetchingEditedData,
   } = useGetRoleById(editedDataId || null);
-  
+
   const formId = "role-form";
 
   const form = useForm<RoleFormValues>({
@@ -71,6 +71,7 @@ export default function CreateRole({
 
   const onSubmit = async (data: RoleFormValues) => {
     const filteredPermissions = filterCheckedPermissions(data.permissions);
+    console.log(">>>8888", filteredPermissions);
     const formData = {
       ...data,
       permissions: filteredPermissions,

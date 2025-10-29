@@ -2,11 +2,13 @@ import { Action, Permissions } from "@/lib/constants";
 
 // Check if any action in an action object is true
 const hasAnyActionChecked = (actions: Action): boolean => {
-  return actions.create || actions.delete || actions.edit || actions.list || actions.read;
+  return Object.values(actions).some((value) => value === true);
 };
 
 // Filter permissions to only include menus and submenus with checked permissions
-export const filterCheckedPermissions = (permissions: Permissions): Permissions => {
+export const filterCheckedPermissions = (
+  permissions: Permissions
+): Permissions => {
   // First, identify which menus have any checked permissions (directly or in submenus)
   const menusWithCheckedPermissions = new Set<string>();
 
