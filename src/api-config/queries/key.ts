@@ -52,3 +52,10 @@ export const flightKey = {
   filters: (filters: Record<string, string | number>) =>
     [...flightKey.all, "list", ...Object.values(filters)] as const,
 };
+
+export const flightBookingKey = {
+  all: ["flight-booking"] as const,
+  detail: (id: string | null) => [...flightBookingKey.all, id, "detail"] as const,
+  filters: (filters: Record<string, string | number>) =>
+    [...flightBookingKey.all, "list", ...Object.values(filters)] as const,
+};

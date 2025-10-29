@@ -75,7 +75,11 @@ export const permission_routes = [
       {
         title: "Flights",
         url: "/travel/flights",
-      }
+      },
+      {
+        title: "Flight Bookings",
+        url: "/travel/flight-bookings",
+      },
     ]
   },
   {
@@ -178,6 +182,18 @@ export const initialPermissions: Permissions = [
           edit: false,
           list: false,
           read: false,
+        },
+      },
+      {
+        menuName: "Flight Bookings",
+        actions: {
+          create: false,
+          delete: false,
+          edit: false,
+          list: false,
+          read: false,
+          approve: false,
+          reject: false,
         },
       },
     ],
