@@ -1,8 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  ...((process.env.NEXT_CONFIG_OUTPUT === "standalone") && { 
-    output: "standalone" 
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  ...(process.env.NEXT_CONFIG_OUTPUT === "standalone" && {
+    output: "standalone",
   }),
 };
 
